@@ -7,7 +7,7 @@
 </head>
 <body>
 
-<table data-collection='posts' border='1'>
+<!--<table data-collection='posts' border='1'>
 	<tr>
 		<th>title</th>
 		<th>date</th>
@@ -18,6 +18,18 @@
 		<td data-bind='date'>date default</td>
 		<td data-bind='link'>link default</td>
 	</tr>
+</table>-->
+
+<ul data-bind='posts'>
+	<li data-repeater>{title}, {date}, {link}</li>
+</ul>
+blaaaahr
+<ul data-bind='posts'>
+	<li data-repeater>{title}, {date}, {link}</li>
+</ul>
+
+<table data-bind='posts'>
+	<tr data-repeater>{title}, {date}, {link}</tr>
 </table>
 
 <script type="text/javascript">
@@ -35,59 +47,52 @@
 
 	$(document).ready(function() {
 
-		$(document).find('*[data-collection]').each(function(index, htmlItem)
-		{
-
-			// get the corresponding data
-		    var collection = model[this.dataset.collection];
-
-		    // get the template and rtemove it from the dom
-		    var itemTemplate = $($(this)[index]).clone();
-
-		    $(this).append(itemTemplate);
-
-		    debugger;
-		    // loop though the collection data
-		   /* for(var item in collection)
-		    {
-		    	var newItem = $(itemTemplate).clone()[0];
-
-		    	// loop though the items of the collection data
-		    	for(var key in collection[item])
-		    	{
-		    		//match the collection data to the corresponding tag
-		    		$(newItem).first().find('*[data-bind]').each(function(index)
-		    		{
-		    			// anonymous wrapper trick
-		    			var myKey = key;
-		    			var dataItem = collection[item];
-		    			var template = itemTemplate;
-
-		    			if(myKey == this.dataset.bind)
-						{
-							$(this).first().html('ergh')
-							template.append(this);
-						}
-
-						debugger;
-		    		});
-
-		    	}
-		    	//this.append( itemTemplate.replace )
-		    }*/
-
-
-		});
-
-		function filterit(key, domObject, dataObject)
-		{
-			if(key == domObject.dataset.bind)
-			{
-				$(domObject).html(dataObject[key]);
-			}
-		}
+		bindAllCollections();
 
 	});
+
+	function bindAllCollections()
+	{
+		$(document).find('*[data-bind]').each(bindCollection);
+	}
+
+	function bindCollection()
+	{
+		var collection = model[this.dataset.bind];
+
+		if(!collection) return; // no model object found
+
+		var innerhtml = $(this).html();
+		$(this).html('');
+
+		for (var i = 0; i < collection.length; i++)
+		{
+			var newhtml = innerhtml;
+
+			for(var key in collection[i])
+			{
+				newhtml = newhtml.replace('{'+key+'}', collection[i][key]);
+				//alert('replace {0} by {1}'.f(key, collection[i][key]));
+			}
+
+			$(this).append(newhtml);
+		}
+
+	}
+
+// format string
+
+String.prototype.format = function() {
+    var s = this,
+        i = arguments.length;
+
+    while (i--) {
+        s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
+    }
+    return s;
+};
+
+String.prototype.f = String.prototype.format;
 
 </script>
 
