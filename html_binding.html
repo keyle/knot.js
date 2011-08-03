@@ -29,8 +29,8 @@ blaaaahr
 </ul>
 
 <table border=1 data-bind='posts'>
-		<tr> <th>tit</th><th>link</th> </tr>
-		<tr data-repeater=''> <td>{title}</td><td>{link}</td> </tr>
+		<tr> <th>tit</th><th>link</th><th>link</th>  </tr>
+		<tr data-repeater=''> <td>{title}</td><td>{link}</td><td>{date}</td> </tr>
 </table>
 
 <script type="text/javascript">
@@ -83,14 +83,16 @@ blaaaahr
 
 		for (var i = 0; i < collection.length; i++)
 		{
+			// make a copy
 			var newhtml = repeatHTML;
 
 			for(var key in collection[i])
 			{
-				newhtml = newhtml.replace('{'+key+'}', collection[i][key]);
-				//alert('replace {0} by {1}'.f(key, collection[i][key]));
+				// using split join as a replace All
+				newhtml = newhtml.split('{'+key+'}').join(collection[i][key]);
 			}
 			//$(newhtml).removeAttr('data-repeater');
+			console.log(papa);
 			$(papa).append(newhtml);
 		}
 
