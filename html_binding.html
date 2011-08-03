@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>test</title>
+	<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.1.min.js"></script>
+	<script type="text/javascript" src="knot.js"></script>
+</head>
+<body>
+
+<table data-collection='posts' border='1'>
+	<tr>
+		<th>title</th>
+		<th>date</th>
+		<th>link</th>
+	</tr>
+	<tr data-collection-item>
+		<td data-bind='title'>title default</td>
+		<td data-bind='date'>date default</td>
+		<td data-bind='link'>link default</td>
+	</tr>
+</table>
+
+<script type="text/javascript">
+
+	var model =
+	{
+		posts :
+		[
+			{ title: 'title 1', date: '22/11/1980', link: 'http://noben.org/' },
+			{ title: 'title 2', date: '12/12/1995', link: 'http://idle.org/' },
+			{ title: 'title 3', date: '25/03/1999', link: 'http://news.org/' },
+			{ title: 'title 4', date: '05/05/2011', link: 'http://pebbles.org/' },
+		]
+	}
+
+	$(document).ready(function() {
+
+		$(document).find('*[data-collection]').each(function(index, htmlItem)
+		{
+
+			// get the corresponding data
+		    var collection = model[this.dataset.collection];
+
+		    // get the template and rtemove it from the dom
+		    var itemTemplate = $($(this)[index]).clone();
+
+		    $(this).append(itemTemplate);
+
+		    debugger;
+		    // loop though the collection data
+		   /* for(var item in collection)
+		    {
+		    	var newItem = $(itemTemplate).clone()[0];
+
+		    	// loop though the items of the collection data
+		    	for(var key in collection[item])
+		    	{
+		    		//match the collection data to the corresponding tag
+		    		$(newItem).first().find('*[data-bind]').each(function(index)
+		    		{
+		    			// anonymous wrapper trick
+		    			var myKey = key;
+		    			var dataItem = collection[item];
+		    			var template = itemTemplate;
+
+		    			if(myKey == this.dataset.bind)
+						{
+							$(this).first().html('ergh')
+							template.append(this);
+						}
+
+						debugger;
+		    		});
+
+		    	}
+		    	//this.append( itemTemplate.replace )
+		    }*/
+
+
+		});
+
+		function filterit(key, domObject, dataObject)
+		{
+			if(key == domObject.dataset.bind)
+			{
+				$(domObject).html(dataObject[key]);
+			}
+		}
+
+	});
+
+</script>
+
+
+
+* find all tag by attribute data-collection
+* for each tag
+* find the data-collection object corresponding
+* find collection-item object
+* template it and remove it
+* for each collection item in the model
+* add the template with replace {var name}
+
+- alternate rows?
+- how to show multiple data fields in the one html field? (converter?)
+
+<button>add</button>
+
+</body>
+</html>
