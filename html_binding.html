@@ -35,57 +35,6 @@
 
 	$(document).ready(function() {
 
-		$(document).find('*[data-collection]').each(function(index, htmlItem)
-		{
-
-			// get the corresponding data
-		    var collection = model[this.dataset.collection];
-
-		    // get the template and rtemove it from the dom
-		    var itemTemplate = $($(this)[index]).clone();
-
-		    $(this).append(itemTemplate);
-
-		    debugger;
-		    // loop though the collection data
-		   /* for(var item in collection)
-		    {
-		    	var newItem = $(itemTemplate).clone()[0];
-
-		    	// loop though the items of the collection data
-		    	for(var key in collection[item])
-		    	{
-		    		//match the collection data to the corresponding tag
-		    		$(newItem).first().find('*[data-bind]').each(function(index)
-		    		{
-		    			// anonymous wrapper trick
-		    			var myKey = key;
-		    			var dataItem = collection[item];
-		    			var template = itemTemplate;
-
-		    			if(myKey == this.dataset.bind)
-						{
-							$(this).first().html('ergh')
-							template.append(this);
-						}
-
-						debugger;
-		    		});
-
-		    	}
-		    	//this.append( itemTemplate.replace )
-		    }*/
-
-
-		});
-
-		function filterit(key, domObject, dataObject)
-		{
-			if(key == domObject.dataset.bind)
-			{
-				$(domObject).html(dataObject[key]);
-			}
-		}
 
 	});
 
