@@ -1,1 +1,8 @@
-__Nothing to see here. But if I can get my way, this will be exciting.__
+## Knot.js
+
+* HTML data-binding, made simple
+* it just works
+
+__Status
+
+Proof of concept / in development.
