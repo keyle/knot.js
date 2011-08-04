@@ -1,7 +1,7 @@
 ## Knot.js
 
 * HTML data-binding, made simple
-* it just works
+* "it should just work"
 
 __Status__
 
