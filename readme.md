@@ -3,6 +3,6 @@
 * HTML data-binding, made simple
 * it just works
 
-__Status
+__Status__
 
 Proof of concept / in development.
