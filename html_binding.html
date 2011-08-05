@@ -11,27 +11,13 @@
 </head>
 <body>
 
-<!--<table data-collection='posts' border='1'>
-	<tr>
-		<th>title</th>
-		<th>date</th>
-		<th>link</th>
-	</tr>
-	<tr data-collection-item>
-		<td data-bind='title'>title default</td>
-		<td data-bind='date'>date default</td>
-		<td data-bind='link'>link default</td>
-	</tr>
-http://stackoverflow.com/questions/1269633/javascript-watch-for-object-properties-changes
-
-</table>-->
 test 1
 
 <ul data-bind='posts'>
 	<li data-repeater>{title}, {date}, {link}</li>
 </ul>
 
-test 3
+test 2
 
 <table border=1 data-bind='posts'>
 		<tr> <th>title</th><th>link</th> <th>selected</th> </tr>
@@ -100,8 +86,13 @@ test 3
 </script>
 
 <br />
-- alternate rows?
-- how to show multiple data fields in the one html field? (converter?)
+<small>
+	<ul>
+		<li>implement converters as extension methods</li>
+		<li>provide a mechanism for alternate rows?</li>
+		<li>provide a mechanism for iterator callback?</li>
+	</ul>
+</small>
 
 <div class='buttons'>
 	<button id='refresh'>refresh</button>

@@ -26,8 +26,6 @@
 	function doBind(domObject)
 	{
 		$(domObject).find('*[data-bind]').each(bindCollection);
-
-		//setTimeout(function(){ doBind(that) }, 1500);
 	}
 
 	function bindCollection()
@@ -42,7 +40,6 @@
 
 
 		// find out what css display style to apply to repeater object
-		// to be refactored
 		var displayStyle = getCSSDisplayStyle(this);
 
 		// hide the template - we will need it again on refresh.
@@ -53,7 +50,7 @@
 		var papa = $(this).find('*[data-repeater]').parent();
 
 		// remove all except the first, it's our template
-		 $(this).find('*[data-repeater]').nextAll().remove();
+		$(this).find('*[data-repeater]').nextAll().remove();
 
 		for (var i = 0; i < collection.length; i++)
 		{
@@ -65,7 +62,7 @@
 				// using split join as a replace All
 				newhtml = newhtml.split('{'+key+'}').join(collection[i][key]);
 			}
-			//$(newhtml).removeAttr('data-repeater');
+
 			$(papa).append(newhtml);
 		}
 
@@ -83,22 +80,9 @@
 			return 'inherit';
 	}
 
-	jQuery.fn.outerHTML = function()
+	$.fn.outerHTML = function()
 	{
-		return $('<div></div>').append( this.clone() ).html();
+		return $('<div></div>').append(this.clone()).html();
 	}
-
-	// format string
-
-	String.prototype.format = function() {
-	    var s = this,
-	        i = arguments.length;
-
-	    while (i--) {
-	        s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
-	    }
-	    return s;
-	};
-
 
 })(jQuery);
