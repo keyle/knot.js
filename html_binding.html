@@ -4,6 +4,10 @@
 	<title>test</title>
 	<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.1.min.js"></script>
 	<script type="text/javascript" src="knot.js"></script>
+	<style>
+		.selected { background: yellow;}
+		.buttons { position: absolute; bottom: 200px; left: 50px; }
+	</style>
 </head>
 <body>
 
@@ -19,18 +23,18 @@
 		<td data-bind='link'>link default</td>
 	</tr>
 </table>-->
+test 1
 
 <ul data-bind='posts'>
 	<li data-repeater>{title}, {date}, {link}</li>
 </ul>
-blaaaahr
-<ul data-bind='posts'>
-	<li data-repeater>{title}, {date}, {link}</li>
-</ul>
+
+test 3
 
 <table border=1 data-bind='posts'>
-		<tr> <th>tit</th><th>link</th><th>link</th>  </tr>
-		<tr data-repeater=''> <td>{title}</td><td>{link}</td><td>{date}</td> </tr>
+		<tr> <th>title</th><th>link</th> <th>selected</th> </tr>
+		<tr data-repeater> <td>{title}</td><td>{link}</td> <td >{selected}</td> </tr>
+
 </table>
 
 <script type="text/javascript">
@@ -39,10 +43,10 @@ blaaaahr
 	{
 		posts :
 		[
-			{ title: 'title 1', date: '22/11/1980', link: 'http://noben.org/' },
-			{ title: 'title 2', date: '12/12/1995', link: 'http://idle.org/' },
-			{ title: 'title 3', date: '25/03/1999', link: 'http://news.org/' },
-			{ title: 'title 4', date: '05/05/2011', link: 'http://pebbles.org/' },
+			{ title: 'title 1', date: '22/11/1980', link: 'http://noben.org/', selected: false },
+			{ title: 'title 1', date: '22/11/1980', link: 'http://noben.org/', selected: false },
+			{ title: 'title 1', date: '22/11/1980', link: 'http://noben.org/', selected: false },
+			{ title: 'title 1', date: '22/11/1980', link: 'http://noben.org/', selected: false },
 		]
 	}
 
@@ -51,11 +55,35 @@ blaaaahr
 		bindAllCollections();
 
 		$('#refresh').click(changeData);
+		$('#add').click(addData);
+		$('#remove').click(removeData);
 	});
 
 	function changeData()
 	{
-		model.posts[0].title = (Math.random()*128).toString();
+		model.posts.forEach(function(data) {
+			data.title = (Math.random()*128).toString();
+		});
+
+		bindAllCollections();
+	}
+
+	function removeData()
+	{
+		model.posts.shift();
+		bindAllCollections();
+
+	}
+
+	function addData()
+	{
+		model.posts.push({
+			title: 'title 4',
+			date: '05/05/2011',
+			link: 'http://pebbles.org/',
+			selected: false
+		});
+
 		bindAllCollections();
 	}
 
@@ -66,20 +94,26 @@ blaaaahr
 
 	function bindCollection()
 	{
-		var collection = model[this.dataset.bind];
+		var collection = model[$(this).attr('data-bind')];
 
 		if(!collection) return; // no model object found
 
+		if($(this).find('*[data-repeater]').length < 1) return; // no repeater found
+
+
+		// find out what css display style to apply to repeater object
+		// to be refactored
+		var displayStyle = getCSSDisplayStyle(this);
 
 		// hide the template - we will need it again on refresh.
-		$($(this).find('*[data-repeater]')[0]).css('display', 'inherit');
-		var repeatHTML = $(this).find('*[data-repeater]')[0].outerHTML;
+		$($(this).find('*[data-repeater]')[0]).css('display', displayStyle);
+		var repeatHTML = $($(this).find('*[data-repeater]')[0]).outerHTML();
 		$($(this).find('*[data-repeater]')[0]).css('display', 'none');
 
 		var papa = $(this).find('*[data-repeater]').parent();
 
 		// remove all except the first, it's our template
-		$(this).find('*[data-repeater]').nextAll().remove();
+		 $(this).find('*[data-repeater]').nextAll().remove();
 
 		for (var i = 0; i < collection.length; i++)
 		{
@@ -92,11 +126,26 @@ blaaaahr
 				newhtml = newhtml.split('{'+key+'}').join(collection[i][key]);
 			}
 			//$(newhtml).removeAttr('data-repeater');
-			console.log(papa);
 			$(papa).append(newhtml);
 		}
 
 	}
+
+	function getCSSDisplayStyle(that)
+	{
+		if($(that).find('*[data-repeater]')[0].nodeName == 'TR')
+			return 'table-row';
+
+		else if($(that).find('*[data-repeater]')[0].nodeName == 'TD')
+			return 'table-cell';
+
+		else
+			return 'inherit';
+	}
+
+jQuery.fn.outerHTML = function() {
+return $('<div></div>').append( this.clone() ).html();
+}
 
 // format string
 
@@ -129,7 +178,10 @@ String.prototype.f = String.prototype.format;
 <br />
 <br />
 <br />
-<button id='refresh'>refresh</button>
-
+<div class='buttons'>
+	<button id='refresh'>refresh</button>
+	<button id='add'>add one</button>
+	<button id='remove'>remove top one</button>
+</div>
 </body>
 </html>
