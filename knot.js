@@ -25,32 +25,68 @@
 
 	function doBind(domObject)
 	{
-		$(domObject).find('*[data-bind]').each(bindCollection);
+		$(domObject).find('*[data-bind]').each(tryBind);
 	}
 
-	function bindCollection()
+	function tryBind(index, that)
 	{
-		var collection = model[$(this).attr('data-bind')];
+		if(hasDataRepeaterTag(that))
+		{
+			bindCollection(that);
+		}
+		else
+		{
+			bindSingle(that);
+		}
+	}
+
+	// forget about this madness of hiding a copy, just store the whole dom object template and be done with it.
+	// there won't be dynamic linking, so...
+
+	function bindSingle(that)
+	{
+		var templateHTML = $(that).outerHTML();
+		//var newhtml = templateHTML;
+		var papa = $(that).parent();
+
+		var obj = model[$(that).attr('data-bind')]
+
+		for(var key in obj)
+		{
+			// using split join as a replace All
+			templateHTML += obj[key];//.split('{'+key+'}').join(obj[key]);
+		}
+
+		$(that).replaceWith(templateHTML);
+
+		//$(papa).append(newhtml);
+
+	}
+
+	// looks at the UI data-bind's, and then tries to match it with the model
+	function bindCollection(that)
+	{
+		var collection = model[$(that).attr('data-bind')];
 
 		if(!collection)
-			throw "ERROR: No Model Object Found " + $(this).attr('data-bind'); // no model object found
+			throw "ERROR: No Model Object Found " + $(that).attr('data-bind'); // no model object found
 
-		if($(this).find('*[data-repeater]').length < 1)
+		if($(that).find('*[data-repeater]').length < 1)
 		 	throw "ERROR: no data-repeater found"; // no repeater found
 
 
 		// find out what css display style to apply to repeater object
-		var displayStyle = getCSSDisplayStyle(this);
+		var displayStyle = getCSSDisplayStyle(that);
 
 		// hide the template - we will need it again on refresh.
-		$($(this).find('*[data-repeater]')[0]).css('display', displayStyle);
-		var repeatHTML = $($(this).find('*[data-repeater]')[0]).outerHTML();
-		$($(this).find('*[data-repeater]')[0]).css('display', 'none');
+		$($(that).find('*[data-repeater]')[0]).css('display', displayStyle);
+		var repeatHTML = $($(that).find('*[data-repeater]')[0]).outerHTML();
+		$($(that).find('*[data-repeater]')[0]).css('display', 'none');
 
-		var papa = $(this).find('*[data-repeater]').parent();
+		var papa = $(that).find('*[data-repeater]').parent();
 
 		// remove all except the first, it's our template
-		$(this).find('*[data-repeater]').nextAll().remove();
+		$(that).find('*[data-repeater]').nextAll().remove();
 
 		for (var i = 0; i < collection.length; i++)
 		{
@@ -65,7 +101,6 @@
 
 			$(papa).append(newhtml);
 		}
-
 	}
 
 	function getCSSDisplayStyle(that)
@@ -78,6 +113,11 @@
 
 		else
 			return 'inherit';
+	}
+
+	function hasDataRepeaterTag(that)
+	{
+		return $(that).find('*[data-repeater]').length > 0;
 	}
 
 	$.fn.outerHTML = function()

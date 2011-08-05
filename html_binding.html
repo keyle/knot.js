@@ -13,8 +13,10 @@
 
 test 1
 
+<h3 data-bind='pageTitle'>{title}</h3>
+
 <ul data-bind='posts'>
-	<li data-repeater>{title}, {date}, {link}</li>
+	<li data-repeater>{title}, {date}, {link} <a href='javascript:handleUiClick({id})'>edit {id}</a></li>
 </ul>
 
 test 2
@@ -31,18 +33,20 @@ test 2
 	{
 		posts :
 		[
-			{ title: 'title 1', date: '22/11/1980', link: 'http://noben.org/', selected: false },
-			{ title: 'title 1', date: '22/11/1980', link: 'http://noben.org/', selected: false },
-			{ title: 'title 1', date: '22/11/1980', link: 'http://noben.org/', selected: false },
-			{ title: 'title 1', date: '22/11/1980', link: 'http://noben.org/', selected: false },
-		]
+			{ id:0, title: 'title 1', date: '22/11/1980', link: 'http://noben.org/', selected: false },
+			{ id:1, title: 'title 1', date: '22/11/1980', link: 'http://noben.org/', selected: false },
+			{ id:2, title: 'title 1', date: '22/11/1980', link: 'http://noben.org/', selected: false },
+			{ id:3, title: 'title 1', date: '22/11/1980', link: 'http://noben.org/', selected: false },
+		],
+
+		pageTitle : {title: 'My Title '},
 	}
 
 	var newMod =
 	{
 		posts :
 		[
-			{ title: 'new stuff', date: 'Today', link: 'http://google.com/', selected: false }
+			{ id:4, title: 'new stuff', date: 'Today', link: 'http://google.com/', selected: false }
 		]
 	}
 
@@ -54,13 +58,21 @@ test 2
 		$('#add').click(addData);
 		$('#remove').click(removeData);
 		$('#fresh').click(freshData);
+
 	});
+
+	function handleUiClick(id)
+	{
+		alert('ui click with id: ' + id);
+	}
 
 	function changeData()
 	{
 		$(document).model().posts.forEach(function(data) {
-			data.title = (Math.random()*128).toString();
+			data.title = parseInt((Math.random()*9)).toString();
 		});
+
+		$(document).model().pageTitle = {title: 'My Other'};
 	}
 
 	function removeData()
@@ -71,6 +83,7 @@ test 2
 	function addData()
 	{
 		$(document).model().posts.push({
+			id: parseInt(Math.random()*9),
 			title: 'title 4',
 			date: '05/05/2011',
 			link: 'http://pebbles.org/',
