@@ -1,7 +1,8 @@
 ## Knot.js
 
 * HTML data-binding, made simple
-* "it should just work"
+* "It just works"
+* Inspired by Adobe Flex and Microsoft WPF / Silverlight
 
 __Status__
 
