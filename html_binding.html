@@ -22,6 +22,8 @@
 		<td data-bind='date'>date default</td>
 		<td data-bind='link'>link default</td>
 	</tr>
+http://stackoverflow.com/questions/1269633/javascript-watch-for-object-properties-changes
+
 </table>-->
 test 1
 
@@ -50,138 +52,62 @@ test 3
 		]
 	}
 
+	var newMod =
+	{
+		posts :
+		[
+			{ title: 'new stuff', date: 'Today', link: 'http://google.com/', selected: false }
+		]
+	}
+
 	$(document).ready(function() {
 
-		bindAllCollections();
+		$(document).knot(model);
 
 		$('#refresh').click(changeData);
 		$('#add').click(addData);
 		$('#remove').click(removeData);
+		$('#fresh').click(freshData);
 	});
 
 	function changeData()
 	{
-		model.posts.forEach(function(data) {
+		$(document).model().posts.forEach(function(data) {
 			data.title = (Math.random()*128).toString();
 		});
-
-		bindAllCollections();
 	}
 
 	function removeData()
 	{
-		model.posts.shift();
-		bindAllCollections();
-
+		var t  = $(document).model().posts.shift();
 	}
 
 	function addData()
 	{
-		model.posts.push({
+		$(document).model().posts.push({
 			title: 'title 4',
 			date: '05/05/2011',
 			link: 'http://pebbles.org/',
 			selected: false
 		});
-
-		bindAllCollections();
 	}
 
-	function bindAllCollections()
+	function freshData()
 	{
-		$(document).find('*[data-bind]').each(bindCollection);
+		$(document).model(newMod);
 	}
-
-	function bindCollection()
-	{
-		var collection = model[$(this).attr('data-bind')];
-
-		if(!collection) return; // no model object found
-
-		if($(this).find('*[data-repeater]').length < 1) return; // no repeater found
-
-
-		// find out what css display style to apply to repeater object
-		// to be refactored
-		var displayStyle = getCSSDisplayStyle(this);
-
-		// hide the template - we will need it again on refresh.
-		$($(this).find('*[data-repeater]')[0]).css('display', displayStyle);
-		var repeatHTML = $($(this).find('*[data-repeater]')[0]).outerHTML();
-		$($(this).find('*[data-repeater]')[0]).css('display', 'none');
-
-		var papa = $(this).find('*[data-repeater]').parent();
-
-		// remove all except the first, it's our template
-		 $(this).find('*[data-repeater]').nextAll().remove();
-
-		for (var i = 0; i < collection.length; i++)
-		{
-			// make a copy
-			var newhtml = repeatHTML;
-
-			for(var key in collection[i])
-			{
-				// using split join as a replace All
-				newhtml = newhtml.split('{'+key+'}').join(collection[i][key]);
-			}
-			//$(newhtml).removeAttr('data-repeater');
-			$(papa).append(newhtml);
-		}
-
-	}
-
-	function getCSSDisplayStyle(that)
-	{
-		if($(that).find('*[data-repeater]')[0].nodeName == 'TR')
-			return 'table-row';
-
-		else if($(that).find('*[data-repeater]')[0].nodeName == 'TD')
-			return 'table-cell';
-
-		else
-			return 'inherit';
-	}
-
-jQuery.fn.outerHTML = function() {
-return $('<div></div>').append( this.clone() ).html();
-}
-
-// format string
-
-String.prototype.format = function() {
-    var s = this,
-        i = arguments.length;
-
-    while (i--) {
-        s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
-    }
-    return s;
-};
-
-String.prototype.f = String.prototype.format;
 
 </script>
 
-
-
-* find all tag by attribute data-collection
-* for each tag
-* find the data-collection object corresponding
-* find collection-item object
-* template it and remove it
-* for each collection item in the model
-* add the template with replace {var name}
-
+<br />
 - alternate rows?
 - how to show multiple data fields in the one html field? (converter?)
-<br />
-<br />
-<br />
+
 <div class='buttons'>
 	<button id='refresh'>refresh</button>
 	<button id='add'>add one</button>
 	<button id='remove'>remove top one</button>
+	<button id='fresh'>apply fresh new object</button>
 </div>
 </body>
 </html>
