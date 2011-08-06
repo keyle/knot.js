@@ -2,7 +2,6 @@
 
 	var dom = {};
 	var model = {};
-	var templates = [];
 
     $.fn.knot = function(_model)
 	{
@@ -17,6 +16,8 @@
 
 	$.fn.model = function(_newModel)
 	{
+		// cheapest getter/setter on the planet
+
 		if(_newModel)
 			model = _newModel;
 
@@ -35,35 +36,16 @@
 			bindCollection(that);
 		else
 			bindSingle(that);
-
-		console.log(templates);
 	}
 
 	function bindSingle(that)
 	{
-		var newToken = parseInt(Math.random()*8800);
-		$(that).attr('token', newToken);
-
-
+		// replace the inside of whatever the data-bind tag has
 		var element = $(that).outerHTML();
 		var modelElement = $(that).attr('data-bind');
+		var content = model[modelElement];
 
-		templates.push({
-			token: newToken,
-			html: element.toString()
-		});
-
-		var obj = model[modelElement];
-
-		for(var key in obj)
-		{
-			// using split join as a replace All
-			element = element.split('{'+key+'}').join(obj[key]);
-		}
-
-		element = element.replace('data-bind', 'data-bound');
-
-		$(that).replaceWith(element);
+		$(that).html(content.toString());
 	}
 
 	// looks at the UI data-bind's, and then tries to match it with the model

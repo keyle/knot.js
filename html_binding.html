@@ -16,8 +16,7 @@
 
 
 -- test 1
-
-<h3 data-bind='pageTitle'>{title}</h3>
+<h2 data-bind='article'></h2>
 
 -- test 2
 
@@ -54,6 +53,7 @@
 		],
 
 		pageTitle : {title: 'My Title '},
+		article: 'yaddee',
 	}
 
 	var newMod =
@@ -86,7 +86,7 @@
 			data.title = parseInt((Math.random()*9)).toString();
 		});
 
-		$(document).model().pageTitle = {title: 'My Other'};
+		$(document).model().article = 'new article title ' + parseInt((Math.random()*99)).toString();
 	}
 
 	function removeData()
