@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>test</title>
+	<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.1.min.js"></script>
+	<script type="text/javascript" src="libs/json2.js"></script>
+	<script type="text/javascript" src="libs/jquery.cookie.js"></script>
+	<script type="text/javascript" src="knot.js"></script>
+	<style>
+		body { font: 15px / 1.3em arial; padding: 10px 80px; color: #444; }
+		.done { text-decoration: line-through; opacity: 0.2; }
+		.todo { font-weight: bold; }
+		h4 { color: #bbb; }
+		#reset { position: absolute; top: 70px; right: 80px; }
+
+		input[type=text] {
+			padding: 3px;
+			width: 250px;
+		}
+
+		ul, li {
+			margin: 0px; padding: 3px 0;
+		}
+	</style>
+</head>
+<body>
+
+	<h4>Knot.js demo</h4>
+	<h1 data-bind='title.capitalize()'>default</h1>
+	<h3 data-bind='subtitle1.capitalize()'>default</h3>
+	<h4 data-bind='subtitle2.capitalize()'>default</h4>
+
+	<input type='text' id='input' /> <button id='add'>Add To List</button>
+	<br /><br />
+
+
+	<ul data-bind='todolist'>
+		<li data-repeater class='{status}'><input class='checkies' id='{id}' type='checkbox' {status.tocheckedconverter()}></input> {todoitem.capitalize()}</li>
+	</ul>
+
+	<br /><br />
+	<button id='clean'>Remove Done Items</button>
+
+	<button id='reset'>Delete Cookie And Reset (!)</button>
+
+
+	<script type='text/javascript'>
+
+		var model = {
+
+			title: 'obligatory TODO list demo...',
+			subtitle1: 'every field presented here comes from the json model (view source)',
+			subtitle2: 'this list will get cookied.',
+
+			todolist: [
+				{id: 5, status: 'todo', todoitem: 'clean the apartment'},
+				{id: 6, status: 'todo', todoitem: 'put down the bins'},
+				{id: 7, status: 'done', todoitem: 'pick up from airport'},
+			]
+		}
+
+		$(document).ready(function() {
+
+			if($.cookie('todo_model') == null)
+			{
+				$(document).knot(model);
+				cookieModel();
+			}
+			else
+			{
+				$(document).knot(getCookieModel());
+			}
+
+			$('#add').click(addToList);
+			$('#clean').click(cleanup);
+			$('#reset').click(reset);
+			$('#input').focus();
+
+			makeTheCheckBoxListenToChange();
+
+			$('#input').keypress(function(e){
+				if(e.which == 13) {
+					addToList();
+				}
+			});
+		})
+
+		function addToList()
+		{
+			if($('#input').val().length < 1)
+				return;
+
+			$(document).model().todolist.unshift({
+				id: $(document).model().todolist.findHighest('id')+1,
+				status: 'todo',
+				// we should really capitalize prior to adding to the model
+				// rather than doing it on the display level... but it's for the sake of the example.
+				todoitem: $('#input').val()
+			});
+
+			cookieModel();
+			makeTheCheckBoxListenToChange();
+			$('#input').focus();
+			$('#input').val('');
+		}
+
+		function checkboxToggled(e)
+		{
+			var id = Number(e.target.id);
+			var dataTodo = $(document).model().todolist.getObjectBy('id', id);
+
+			if(e.target.checked)
+				dataTodo.status = 'done';
+			else
+				dataTodo.status = 'todo';
+
+			cookieModel();
+			makeTheCheckBoxListenToChange();
+			$('#input').focus();
+		}
+
+		function cleanup()
+		{
+			var arr = $(document).model().todolist.getAllObjectsBy('status', 'done');
+
+			for(var i in arr)
+			{
+				$(document).model().todolist.remove(arr[i]);
+			}
+
+			cookieModel();
+			makeTheCheckBoxListenToChange();
+			$('#input').focus();
+		}
+
+		function reset()
+		{
+			$(document).knot(model);
+			cookieModel();
+		}
+
+		function makeTheCheckBoxListenToChange()
+		{
+			// waiting for the ui to be trully drawn.
+			setTimeout(function(){$('.checkies').change(checkboxToggled);}, 150);
+		}
+
+		function getCookieModel()
+		{
+			return $.parseJSON( $.cookie('todo_model') );
+		}
+
+		function cookieModel()
+		{
+			$.cookie('todo_model', JSON.stringify($(document).model()), { expires: 700 });
+		}
+
+		String.prototype.capitalize = function()
+		{
+			if(this.length < 1)
+				return;
+
+			return this.charAt(0).toUpperCase() + this.slice(1);
+		}
+
+		String.prototype.tocheckedconverter = function()
+		{
+			return (this == 'done') ? "checked='yes'" : '';
+		}
+
+		Array.prototype.findHighest = function(inField)
+		{
+			var tmp = [];
+
+			for (var i = 0; i < this.length; i++) {
+				tmp[i] = Number(this[i][inField]);
+			}
+
+			if(this.length < 1)
+				return 0;
+
+			// (c) john resig: http://ejohn.org/blog/fast-javascript-maxmin/
+			return Math.max.apply(Math, tmp);
+		}
+
+		Array.prototype.getObjectBy = function(field, withValue)
+		{
+			for (var i = 0; i < this.length; i++) {
+				if(this[i][field] == withValue)
+					return this[i];
+			}
+
+			return null;
+		}
+
+		Array.prototype.getAllObjectsBy = function(field, withValue)
+		{
+			var results = [];
+
+			for (var i = 0; i < this.length; i++) {
+				if(this[i][field] == withValue)
+					results.push(this[i]);
+			}
+
+			return (results.length>0) ? results : null;
+		}
+
+		Array.prototype.remove = function(key)
+		{
+		    for(var i = 0; i < this.length; ++i)
+		    {
+		        if(this[i] == key)
+		        {
+		            this.splice(i, 1);
+		            return;
+		        }
+		    }
+		}
+
+		Array.prototype.addIfUnique = function(key, value)
+		{
+			if(this.contains(key))
+				this[key] = value;
+			else
+			{
+				this.push(key);
+				this[key] = value;
+			}
+		}
+
+		Array.prototype.contains = function(obj)
+		{
+			var i = this.length;
+
+			while (i--)
+			{
+				if (this[i] === obj)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+
+	</script>
+
+</body>
+</html>

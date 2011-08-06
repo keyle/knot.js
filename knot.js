@@ -17,11 +17,10 @@
 	$.fn.model = function(_newModel)
 	{
 		// cheapest getter/setter on the planet
-
 		if(_newModel)
 			model = _newModel;
 
-		setTimeout(function(){ doBind(dom); }, 50 );
+		setTimeout(function(){ doBind(dom); }, 60 );
 		return model;
 	}
 
@@ -43,9 +42,25 @@
 		// replace the inside of whatever the data-bind tag has
 		var element = $(that).outerHTML();
 		var modelElement = $(that).attr('data-bind');
-		var content = model[modelElement];
 
-		$(that).html(content.toString());
+		// do we have a converter or string format?
+		if(modelElement.indexOf('.') != -1)
+		{
+			var arr = modelElement.split('.');
+			var content = model[arr[0]];
+			var evil = eval( '"' + content +  '".'+arr[1] );
+			$(that).html(evil.toString());
+		}
+		else
+		{
+			try {
+				var content = model[modelElement];
+				$(that).html(content.toString());
+			}
+			catch(e) {
+				console.log( "ERROR: No Model Object found at " +$(that).outerHTML());
+			}
+		}
 	}
 
 	// looks at the UI data-bind's, and then tries to match it with the model
@@ -54,10 +69,10 @@
 		var collection = model[$(that).attr('data-bind')];
 
 		if(!collection)
-			throw "ERROR: No Model Object Found " + $(that).attr('data-bind'); // no model object found
+			console.log( "ERROR: No Model Object Found " + $(that).attr('data-bind') ); // no model object found
 
 		if($(that).find('*[data-repeater]').length < 1)
-		 	throw "ERROR: no data-repeater found"; // no repeater found
+		 	console.log( "ERROR: no data-repeater found" ); // no repeater found
 
 
 		// find out what css display style to apply to repeater object
@@ -80,8 +95,18 @@
 
 			for(var key in collection[i])
 			{
-				// using split join as a replace All
+				// using split join as a cheap replace All
 				newhtml = newhtml.split('{'+key+'}').join(collection[i][key]);
+
+				// checking if someone had a converter or string format
+				arr = newhtml.match(/\{([^}]+)\.([^}]+)/);
+				arr.shift();
+
+				if(arr[0] == key)
+				{
+					var evil = eval('"'+collection[i][key]+ '".' + arr[1]);
+					newhtml = newhtml.replace('{'+arr[0]+'.'+arr[1]+'}', evil);
+				}
 			}
 
 			$(papa).append(newhtml);
@@ -103,6 +128,11 @@
 	function hasDataRepeaterTag(that)
 	{
 		return $(that).find('*[data-repeater]').length > 0;
+	}
+
+	String.prototype.contains = function(that)
+	{
+		(this.split('').join('').indexOf(that.toString()) != -1)
 	}
 
 	$.fn.outerHTML = function()
