@@ -2,6 +2,7 @@
 
 	var dom = {};
 	var model = {};
+	var templates = [];
 
     $.fn.knot = function(_model)
 	{
@@ -31,36 +32,38 @@
 	function tryBind(index, that)
 	{
 		if(hasDataRepeaterTag(that))
-		{
 			bindCollection(that);
-		}
 		else
-		{
 			bindSingle(that);
-		}
-	}
 
-	// forget about this madness of hiding a copy, just store the whole dom object template and be done with it.
-	// there won't be dynamic linking, so...
+		console.log(templates);
+	}
 
 	function bindSingle(that)
 	{
-		var templateHTML = $(that).outerHTML();
-		//var newhtml = templateHTML;
-		var papa = $(that).parent();
+		var newToken = parseInt(Math.random()*8800);
+		$(that).attr('token', newToken);
 
-		var obj = model[$(that).attr('data-bind')]
+
+		var element = $(that).outerHTML();
+		var modelElement = $(that).attr('data-bind');
+
+		templates.push({
+			token: newToken,
+			html: element.toString()
+		});
+
+		var obj = model[modelElement];
 
 		for(var key in obj)
 		{
 			// using split join as a replace All
-			templateHTML += obj[key];//.split('{'+key+'}').join(obj[key]);
+			element = element.split('{'+key+'}').join(obj[key]);
 		}
 
-		$(that).replaceWith(templateHTML);
+		element = element.replace('data-bind', 'data-bound');
 
-		//$(papa).append(newhtml);
-
+		$(that).replaceWith(element);
 	}
 
 	// looks at the UI data-bind's, and then tries to match it with the model

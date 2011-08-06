@@ -11,21 +11,35 @@
 </head>
 <body>
 
-test 1
+
+
+
+
+-- test 1
 
 <h3 data-bind='pageTitle'>{title}</h3>
+
+-- test 2
 
 <ul data-bind='posts'>
 	<li data-repeater>{title}, {date}, {link} <a href='javascript:handleUiClick({id})'>edit {id}</a></li>
 </ul>
 
-test 2
+
+-- test 3
 
 <table border=1 data-bind='posts'>
 		<tr> <th>title</th><th>link</th> <th>selected</th> </tr>
 		<tr data-repeater> <td>{title}</td><td>{link}</td> <td >{selected}</td> </tr>
-
 </table>
+
+
+
+
+
+
+
+
 
 <script type="text/javascript">
 
