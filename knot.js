@@ -88,6 +88,8 @@
 		// remove all except the first, it's our template
 		$(that).find('*[data-repeater]').nextAll().remove();
 
+		arr = [];
+
 		for (var i = 0; i < collection.length; i++)
 		{
 			// make a copy
@@ -100,13 +102,18 @@
 
 				// checking if someone had a converter or string format
 				arr = newhtml.match(/\{([^}]+)\.([^}]+)/);
-				arr.shift();
 
-				if(arr[0] == key)
+				if(arr)
 				{
-					var evil = eval('"'+collection[i][key]+ '".' + arr[1]);
-					newhtml = newhtml.replace('{'+arr[0]+'.'+arr[1]+'}', evil);
+					arr.shift();
+
+					if(arr[0] == key)
+					{
+						var evil = eval('"'+collection[i][key]+ '".' + arr[1]);
+						newhtml = newhtml.replace('{'+arr[0]+'.'+arr[1]+'}', evil);
+					}
 				}
+
 			}
 
 			$(papa).append(newhtml);
