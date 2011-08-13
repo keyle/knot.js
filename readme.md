@@ -6,4 +6,4 @@
 
 __Status__
 
-Proof of concept / in development.
+Proof of concept / in use in our development / unstable.
